@@ -1,0 +1,47 @@
+{
+  "name": "plan-project",
+  "version": "0.1.0",
+  "description": "Plan a project or feature as a set of very small, dependency-ordered spec files with steering docs, a progress tracker, and a validator. Installs into Claude Code, Cursor, Windsurf, Copilot, Cline, Roo, and any AGENTS.md agent.",
+  "type": "module",
+  "bin": {
+    "plan-project": "bin/plan-project.mjs"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "SKILL.md",
+    "references",
+    "templates",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "author": "mplus-s",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mplus-s/plan-project.git"
+  },
+  "homepage": "https://github.com/mplus-s/plan-project#readme",
+  "bugs": {
+    "url": "https://github.com/mplus-s/plan-project/issues"
+  },
+  "keywords": [
+    "claude-code",
+    "claude-skill",
+    "agent-skill",
+    "agents-md",
+    "cursor",
+    "cursor-rules",
+    "windsurf",
+    "copilot",
+    "cline",
+    "roo-code",
+    "ai-coding-agent",
+    "spec-driven-development",
+    "planning"
+  ]
+}

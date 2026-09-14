@@ -27,14 +27,59 @@ are written once and read by every spec. Specs are disposable units of work.
 
 ## Install
 
-Clone into your Claude Code skills directory:
-
 ```bash
-git clone https://github.com/mplus-s/plan-project.git ~/.claude/skills/plan-project
+npx plan-project
 ```
 
-Then invoke it in any session with `/plan-project`, or just ask to plan or spec
-out a project.
+Run it in your repo. It detects which coding agents the repo uses and installs
+into each of them. Re-running updates in place; it never overwrites a file it
+did not write.
+
+```bash
+npx plan-project --list          # what's detected here, changes nothing
+npx plan-project --dry-run       # what would be written, changes nothing
+npx plan-project --all           # every supported agent, detected or not
+npx plan-project --agents cursor,claude
+npx plan-project --global        # the Claude Code skill, for all projects
+```
+
+### How it installs
+
+The content is ~94KB and `SKILL.md` alone is 12,759 characters — more than
+Windsurf allows in a single rule file, and far more than you want billed on
+every Cursor request. So it goes in **once**, and each agent gets a short
+adapter pointing at it:
+
+```
+.ai/plan-project/                 the content — one copy
+.claude/skills/plan-project       → symlink (native skill, full fidelity)
+.cursor/rules/plan-project.mdc    description-triggered, alwaysApply: false
+.windsurf/rules/plan-project.md   trigger: model_decision
+.github/instructions/plan-project.instructions.md
+.clinerules/plan-project.md  ·  .roo/rules/plan-project.md
+AGENTS.md                         an appended section, your content untouched
+```
+
+Commit `.ai/plan-project/` and the adapters so your team gets it too.
+
+### What each agent actually gets
+
+Support is real but not uniform, and it is worth knowing which tier you are in:
+
+| Tier | Agents | What happens |
+| --- | --- | --- |
+| **Native** | Claude Code | A real skill. `/plan-project`, progressive disclosure, invoked by the Skill tool |
+| **Model-decides** | Cursor, Windsurf, GitHub Copilot, Cline, Roo Code | The agent pulls the rule in when it judges it relevant, then follows the pointer. Usually works; ask for it by name if it doesn't |
+| **Always-on** | Codex, Gemini CLI, Aider, Zed, Amp, Jules, Warp, Junie, goose, opencode and the rest of [AGENTS.md](https://agents.md) | A section in `AGENTS.md`. Widest reach, weakest targeting |
+
+Only Claude Code has progressive disclosure natively, which is what this skill
+is built around. Everywhere else the adapter is a router: it carries the rules
+that matter and tells the agent which reference to open next.
+
+### Requirements
+
+Node 18+ for the installer. The validator is Python — `python3` on PATH to run
+it. Nothing else; the installer has zero dependencies.
 
 ## The validator
 
