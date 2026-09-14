@@ -8,10 +8,13 @@ import { join, dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
 import { AGENTS, MARK_BEGIN, MARK_END } from "../lib/agents.mjs";
+import { multiselect } from "../lib/prompt.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PKG = resolve(HERE, "..");
 const PAYLOAD = ["SKILL.md", "references", "templates", "scripts"];
+
+const BYLINE = "plan-project \u00b7 by M Shahzad";
 
 const C = process.stdout.isTTY
   ? { r: "\x1b[31m", g: "\x1b[32m", y: "\x1b[33m", d: "\x1b[2m", b: "\x1b[1m", x: "\x1b[0m" }
@@ -27,7 +30,7 @@ const val = (f, d) => {
 
 if (has("-h", "--help")) {
   console.log(`
-${C.b}plan-project${C.x} — install the planning skill into your coding agents
+${C.b}plan-project${C.x} ${C.d}by M Shahzad${C.x} — install the planning skill into your coding agents
 
   ${C.b}npx plan-project${C.x}                 install into every agent detected here
   ${C.b}npx plan-project --all${C.x}           install into every supported agent
@@ -44,11 +47,14 @@ Options
   --payload <path>   where the content lives (default: .ai/plan-project)
   --dry-run          print the plan, write nothing
   --list             print detected agents and exit
+  -y, --yes          skip the picker, take what is detected
   --force            overwrite an adapter that was hand-edited
   -h, --help         this
 
-The content is installed once into the payload directory; each agent gets a
-short adapter pointing at it. Re-running updates in place and is safe.
+Run with no arguments in a terminal and it shows a picker, with the agents it
+detected already ticked. The content is installed once into the payload
+directory; each agent gets a short adapter pointing at it. Re-running updates
+in place and is safe.
 `);
   process.exit(0);
 }
@@ -63,11 +69,12 @@ const global = has("--global");
 const detected = AGENTS.filter((a) => a.detect.some((d) => existsSync(join(root, d))));
 
 if (has("--list")) {
-  console.log(`\n${C.b}Target${C.x} ${root}\n`);
+  console.log(`\n${C.b}plan-project${C.x} ${C.d}by M Shahzad${C.x}\n`);
+  console.log(`${C.b}Target${C.x} ${root}\n`);
   for (const a of AGENTS) {
     const hit = detected.includes(a);
     console.log(`  ${hit ? C.g + "detected" + C.x : C.d + "   --   " + C.x}  ` +
-                `${a.id.padEnd(9)} ${C.d}${a.name} · ${a.tier}${C.x}`);
+                `${a.id.padEnd(12)} ${C.d}${a.name} · ${a.tier}${C.x}`);
   }
   console.log(`\n${C.d}Install with: npx plan-project${C.x}\n`);
   process.exit(0);
@@ -75,7 +82,15 @@ if (has("--list")) {
 
 let chosen;
 if (global) {
-  chosen = [AGENTS.find((a) => a.id === "claude")];
+  const want = argv.includes("--agents")
+    ? val("--agents", "").split(",").map((x) => x.trim()).filter(Boolean)
+    : ["claude"];
+  chosen = AGENTS.filter((a) => a.globalDir && want.includes(a.id));
+  if (!chosen.length) {
+    console.error(`${C.r}--global supports:${C.x} ` +
+      AGENTS.filter((a) => a.globalDir).map((a) => a.id).join(", "));
+    process.exit(1);
+  }
 } else if (argv.includes("--agents")) {
   const want = val("--agents", "").split(",").map((s) => s.trim()).filter(Boolean);
   const bad = want.filter((w) => !AGENTS.some((a) => a.id === w));
@@ -91,6 +106,30 @@ if (global) {
   chosen = detected.length ? [...detected] : [];
   const agentsMd = AGENTS.find((a) => a.always);
   if (!chosen.includes(agentsMd)) chosen.push(agentsMd); // always the safe floor
+
+  // Interactive picker, unless this is a pipe/CI or --yes was passed.
+  const interactive = process.stdin.isTTY && process.stdout.isTTY &&
+                      !has("-y", "--yes") && !dry;
+  if (interactive) {
+    console.log(`\n${C.b}plan-project${C.x} ${C.d}by M Shahzad${C.x}`);
+    console.log(`${C.d}${root}${C.x}\n`);
+    const picked = await multiselect(
+      AGENTS.map((a) => ({
+        label: a.name,
+        hint: `${detected.includes(a) ? "detected · " : ""}${a.note}`,
+        checked: chosen.includes(a),
+      })),
+      { title: "Which agents should it install into?", C });
+    if (picked === null) {
+      console.log(`${C.y}Cancelled.${C.x} Nothing was written.\n`);
+      process.exit(130);
+    }
+    if (!picked.length) {
+      console.log(`${C.y}No agents selected.${C.x} Nothing was written.\n`);
+      process.exit(0);
+    }
+    chosen = picked.map((i) => AGENTS[i]);
+  }
 }
 
 if (!chosen.length) {
@@ -175,15 +214,18 @@ function copyPayload(destAbs) {
   return true;
 }
 
-console.log(`\n${C.b}plan-project${C.x} → ${root}${dry ? C.y + "  (dry run)" + C.x : ""}\n`);
+console.log(`${C.b}plan-project${C.x} ${C.d}by M Shahzad${C.x} → ${root}${dry ? C.y + "  (dry run)" + C.x : ""}\n`);
 
 // --global: the skill goes straight into ~/.claude/skills, no payload dir.
 if (global) {
-  const dest = join(homedir(), ".claude", "skills", "plan-project");
-  if (!copyPayload(dest)) process.exit(1);
-  console.log(`  ${C.g}✓${C.x} Claude Code ${C.d}(all projects)${C.x}  ${dest}`);
+  let bad = 0;
+  for (const a of chosen) {
+    const dest = join(homedir(), ...a.globalDir);
+    if (!copyPayload(dest)) { bad = 1; continue; }
+    console.log(`  ${C.g}✓${C.x} ${a.name} ${C.d}(all projects)${C.x}  ${dest}`);
+  }
   console.log(`\n${C.d}Invoke it in any session with /plan-project.${C.x}\n`);
-  process.exit(0);
+  process.exit(bad);
 }
 
 // Everyone else: one payload, thin adapters.

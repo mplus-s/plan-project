@@ -1,8 +1,12 @@
 # plan-project
 
-A [Claude Code](https://claude.com/claude-code) skill that turns a brief — or an
-existing repository — into a set of very small, dependency-ordered spec files
-that a fresh, context-free agent session can pick up one at a time.
+**by M Shahzad**
+
+A skill that turns a brief — or an existing repository — into a set of very
+small, dependency-ordered spec files that a fresh, context-free agent session
+can pick up one at a time. Works in [Claude Code](https://claude.com/claude-code),
+OpenAI Codex, Cursor, Google Antigravity, Windsurf, GitHub Copilot, Cline, Roo
+Code, and every agent that reads [AGENTS.md](https://agents.md).
 
 Each spec is small enough that one session can read it, implement it, verify it
 end to end, and leave a written handoff. The skill plans; it does not implement.
@@ -31,16 +35,33 @@ are written once and read by every spec. Specs are disposable units of work.
 npx plan-project
 ```
 
-Run it in your repo. It detects which coding agents the repo uses and installs
-into each of them. Re-running updates in place; it never overwrites a file it
-did not write.
+Run it in your repo. It shows a picker with the agents it detected already
+ticked — space to toggle, `a` for all, enter to install:
+
+```
+ Which agents should it install into?
+   ↑↓ move · space toggle · a all · enter install · esc cancel
+
+   ◯ Claude Code            full skill, progressive disclosure, Skill tool
+   ◯ OpenAI Codex           SKILL.md skill at .agents/skills/ — full fidelity
+ ❯ ◉ Cursor                 detected · Apply Intelligently
+   ◯ Google Antigravity     workspace rule in .agents/rules/
+   ◯ Windsurf               trigger: model_decision
+   ◯ GitHub Copilot         applyTo: specs/**
+   ◯ Cline                  plain rule file
+   ◯ Roo Code               plain rule file
+   ◉ AGENTS.md              Codex, Gemini CLI, Aider, Zed, Amp, Jules…
+```
+
+Re-running updates in place; it never overwrites a file it did not write.
 
 ```bash
 npx plan-project --list          # what's detected here, changes nothing
 npx plan-project --dry-run       # what would be written, changes nothing
 npx plan-project --all           # every supported agent, detected or not
-npx plan-project --agents cursor,claude
-npx plan-project --global        # the Claude Code skill, for all projects
+npx plan-project --agents cursor,claude,codex
+npx plan-project -y              # skip the picker, take what's detected
+npx plan-project --global        # install for all projects, not just this one
 ```
 
 ### How it installs
@@ -52,8 +73,10 @@ adapter pointing at it:
 
 ```
 .ai/plan-project/                 the content — one copy
-.claude/skills/plan-project       → symlink (native skill, full fidelity)
+.claude/skills/plan-project       → symlink   (Claude Code, native)
+.agents/skills/plan-project       → symlink   (Codex, native)
 .cursor/rules/plan-project.mdc    description-triggered, alwaysApply: false
+.agents/rules/plan-project.md     Antigravity workspace rule
 .windsurf/rules/plan-project.md   trigger: model_decision
 .github/instructions/plan-project.instructions.md
 .clinerules/plan-project.md  ·  .roo/rules/plan-project.md
@@ -68,13 +91,14 @@ Support is real but not uniform, and it is worth knowing which tier you are in:
 
 | Tier | Agents | What happens |
 | --- | --- | --- |
-| **Native** | Claude Code | A real skill. `/plan-project`, progressive disclosure, invoked by the Skill tool |
-| **Model-decides** | Cursor, Windsurf, GitHub Copilot, Cline, Roo Code | The agent pulls the rule in when it judges it relevant, then follows the pointer. Usually works; ask for it by name if it doesn't |
+| **Native** | Claude Code, OpenAI Codex | A real skill — both read the `SKILL.md` format, so they get progressive disclosure and invoke it as a skill |
+| **Model-decides** | Cursor, Google Antigravity, Windsurf, GitHub Copilot, Cline, Roo Code | The agent pulls the rule in when it judges it relevant, then follows the pointer. Usually works; ask for it by name if it doesn't |
 | **Always-on** | Codex, Gemini CLI, Aider, Zed, Amp, Jules, Warp, Junie, goose, opencode and the rest of [AGENTS.md](https://agents.md) | A section in `AGENTS.md`. Widest reach, weakest targeting |
 
-Only Claude Code has progressive disclosure natively, which is what this skill
-is built around. Everywhere else the adapter is a router: it carries the rules
-that matter and tells the agent which reference to open next.
+Claude Code and Codex both read the `SKILL.md` format, so they get the skill as
+designed — a short always-loaded entry point with references pulled in on
+demand. Everywhere else the adapter is a router: it carries the rules that
+matter and tells the agent which reference to open next.
 
 ### Requirements
 
@@ -140,4 +164,4 @@ scripts/validate-specs.py   the mechanical check
 
 ## Licence
 
-MIT
+MIT © M Shahzad

@@ -1,7 +1,7 @@
 {
   "name": "plan-project",
   "version": "0.1.0",
-  "description": "Plan a project or feature as a set of very small, dependency-ordered spec files with steering docs, a progress tracker, and a validator. Installs into Claude Code, Cursor, Windsurf, Copilot, Cline, Roo, and any AGENTS.md agent.",
+  "description": "Plan a project or feature as a set of very small, dependency-ordered spec files with steering docs, a progress tracker, and a validator. Installs into Claude Code, Codex, Cursor, Antigravity, Windsurf, Copilot, Cline, Roo and any AGENTS.md agent.",
   "type": "module",
   "bin": {
     "plan-project": "bin/plan-project.mjs"
@@ -20,7 +20,7 @@
     "node": ">=18"
   },
   "license": "MIT",
-  "author": "mplus-s",
+  "author": "M Shahzad",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mplus-s/plan-project.git"
@@ -42,6 +42,9 @@
     "roo-code",
     "ai-coding-agent",
     "spec-driven-development",
-    "planning"
+    "planning",
+    "antigravity",
+    "codex",
+    "gemini"
   ]
 }
