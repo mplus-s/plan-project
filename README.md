@@ -88,8 +88,12 @@ project has no GitHub remote.
 ## Install
 
 ```bash
-npx plan-project
+npx github:mplus-s/plan-project
 ```
+
+It installs straight from the GitHub repo — there is nothing on the npm
+registry, so that is the command, and `git` has to be on your PATH for npx to
+fetch it. Pin a release by appending a ref: `npx github:mplus-s/plan-project#v0.2.0`.
 
 Run it in your repo. It shows a picker with the agents it detected already
 ticked — space to toggle, `a` for all, enter to install:
@@ -112,12 +116,12 @@ ticked — space to toggle, `a` for all, enter to install:
 Re-running updates in place; it never overwrites a file it did not write.
 
 ```bash
-npx plan-project --list          # what's detected here, changes nothing
-npx plan-project --dry-run       # what would be written, changes nothing
-npx plan-project --all           # every supported agent, detected or not
-npx plan-project --agents cursor,claude,codex
-npx plan-project -y              # skip the picker, take what's detected
-npx plan-project --global        # install for all projects, not just this one
+npx github:mplus-s/plan-project --list          # what's detected here, changes nothing
+npx github:mplus-s/plan-project --dry-run       # what would be written, changes nothing
+npx github:mplus-s/plan-project --all           # every supported agent, detected or not
+npx github:mplus-s/plan-project --agents cursor,claude,codex
+npx github:mplus-s/plan-project -y              # skip the picker, take what's detected
+npx github:mplus-s/plan-project --global        # install for all projects, not just this one
 ```
 
 ### How it installs
@@ -158,7 +162,7 @@ matter and tells the agent which reference to open next.
 
 ### Requirements
 
-Node 18+ for the installer. The validator is Python — `python3` on PATH to run
+Node 18+ and `git` for the installer (npx clones the repo). The validator is Python — `python3` on PATH to run
 it. Nothing else; the installer has zero dependencies.
 
 ## The validator

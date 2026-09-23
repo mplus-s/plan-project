@@ -7,7 +7,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, symlinkSync
 import { join, dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
-import { AGENTS, MARK_BEGIN, MARK_END } from "../lib/agents.mjs";
+import { AGENTS, MARK_BEGIN, MARK_BEGINS, MARK_END } from "../lib/agents.mjs";
 import { multiselect } from "../lib/prompt.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -32,12 +32,12 @@ if (has("-h", "--help")) {
   console.log(`
 ${C.b}plan-project${C.x} ${C.d}by M Shahzad${C.x} — install the planning skill into your coding agents
 
-  ${C.b}npx plan-project${C.x}                 install into every agent detected here
-  ${C.b}npx plan-project --all${C.x}           install into every supported agent
-  ${C.b}npx plan-project --agents cursor,claude${C.x}
-  ${C.b}npx plan-project --global${C.x}        install the Claude Code skill for all projects
-  ${C.b}npx plan-project --list${C.x}          show what is detected, change nothing
-  ${C.b}npx plan-project --dry-run${C.x}       show what would be written, change nothing
+  ${C.b}npx github:mplus-s/plan-project${C.x}                 install into every agent detected here
+  ${C.b}npx github:mplus-s/plan-project --all${C.x}           install into every supported agent
+  ${C.b}npx github:mplus-s/plan-project --agents cursor,claude${C.x}
+  ${C.b}npx github:mplus-s/plan-project --global${C.x}        install the Claude Code skill for all projects
+  ${C.b}npx github:mplus-s/plan-project --list${C.x}          show what is detected, change nothing
+  ${C.b}npx github:mplus-s/plan-project --dry-run${C.x}       show what would be written, change nothing
 
 Options
   --agents <a,b>     comma-separated: ${AGENTS.map((a) => a.id).join(", ")}
@@ -76,7 +76,7 @@ if (has("--list")) {
     console.log(`  ${hit ? C.g + "detected" + C.x : C.d + "   --   " + C.x}  ` +
                 `${a.id.padEnd(12)} ${C.d}${a.name} · ${a.tier}${C.x}`);
   }
-  console.log(`\n${C.d}Install with: npx plan-project${C.x}\n`);
+  console.log(`\n${C.d}Install with: npx github:mplus-s/plan-project${C.x}\n`);
   process.exit(0);
 }
 
@@ -164,9 +164,10 @@ function merge(rel, sectionText) {
   let next;
   if (existsSync(abs)) {
     const cur = readFileSync(abs, "utf8");
-    if (cur.includes(MARK_BEGIN) && cur.includes(MARK_END)) {
+    const found = MARK_BEGINS.find((m) => cur.includes(m));
+    if (found && cur.includes(MARK_END)) {
       const re = new RegExp(
-        `${MARK_BEGIN.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\S]*?` +
+        `${found.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\S]*?` +
         `${MARK_END.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`);
       next = cur.replace(re, block);
       if (next === cur) { skipped.push([rel, "already current"]); return; }
