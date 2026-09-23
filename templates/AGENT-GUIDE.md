@@ -27,6 +27,34 @@ A spec that combines UI and background work, or persistence and realtime state,
 or several unrelated routes, is more than one spec. Say so and stop, rather than
 doing all of it.
 
+## Claim the GitHub issue before writing code
+
+One spec is one issue is one pull request.
+
+1. **Search first** — `gh issue list --state all --search "Spec NN in:title"`.
+   An issue whose title starts with `Spec NN ` already exists on any re-run;
+   opening a second one is the failure this ordering prevents.
+2. If none exists, create it: title `Spec NN — <spec title>`, labels `spec` and
+   `spec:NN`, body = the spec's Goal and `Done when`.
+3. Assign it to yourself, then write `#<n>` into the spec's `**Issue:**` header
+   line and the tracker row — **before** any code.
+4. When the spec's `Done when` genuinely passes: branch `spec/NN-<slug>`,
+   commit, push, and open a PR whose body says `Closes #<n>`. Move the issue to
+   Done on the board if the repo has one; otherwise the merge closes it. **Never
+   merge your own PR.**
+5. Put the issue and PR URLs in the Log.
+
+`gh` failing is not a reason to abandon the spec — log what failed and do the
+work. Skip this section entirely if the project has no GitHub remote.
+
+## The model on the spec is the model to run
+
+Each spec's `**Model:**` line names a tier and one model per provider, sized to
+what the spec can damage if it goes wrong. `spec-run` passes the Claude id
+through automatically. If you were started by hand on a lower tier than the spec
+names, say so in the Log. A `Light` spec that turns out to be `Standard` work
+gets **re-tiered and re-run**, not retried at the same tier.
+
 ## Verify before you assert
 
 Never write "X is already installed" or "the existing Y" without checking.
@@ -118,6 +146,8 @@ nobody silently reports "passes" on something they could not run.
 5. `INVENTORY.md` records anything new and reusable.
 6. `PROGRESS.md` and the spec's own Log reflect the work **and any verification
    gaps**.
+7. The GitHub issue is assigned, the PR is open with `Closes #<n>`, and both
+   URLs are in the Log (skip when the project has no GitHub remote).
 
 ## Update the tracker before finishing
 

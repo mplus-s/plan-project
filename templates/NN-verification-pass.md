@@ -2,6 +2,8 @@
 
 **Status:** Not started
 **Depends on:** 00-NN
+**Model:** Heavy — `claude-opus-5` · `gpt-6-astra` · `gemini-3.1-pro-preview`
+**Issue:** —
 **Owns:** —
 **Reuses:** every earlier spec's `Done when`
 

@@ -10,7 +10,9 @@ Checks the things that actually go wrong: malformed headers that break
 one file, deferrals with no target, `Reuses` paths that exist nowhere, untiered
 `Done when` bullets, UI specs with no end-to-end criterion, whole-suite runs
 mistagged as scoped `[e2e]`, spec sets with no checkpoint before the final
-verification pass, code emission, raw hex outside the design system, and tracker
+verification pass, model lines that name no tier or no model per provider,
+malformed issue references, code emission, raw hex outside the design system,
+and tracker
 rows that don't match the files.
 
 Exit codes: 0 clean (warnings allowed) · 1 errors found · 2 no spec set here.
@@ -22,6 +24,11 @@ import sys
 from collections import defaultdict
 
 STATUSES = {"Not started", "In progress", "Blocked", "Done"}
+TIER_NAMES = {"heavy", "standard", "light"}
+# "Heavy — `claude-opus-5` · `gpt-6-astra` · `gemini-3.1-pro-preview`"
+MODEL_LINE = re.compile(r"^(heavy|standard|light)\b", re.I)
+MODEL_ID = re.compile(r"`?([a-z0-9][a-z0-9.\-]{3,})`?")
+ISSUE_VALUE = re.compile(r"^(—|-|none|#\d+|https://github\.com/\S+/issues/\d+)$", re.I)
 REQUIRED_SECTIONS = ["Goal", "Scope", "Explicit non-scope", "Steps", "Done when"]
 STEERING = ["README.md", "PROGRESS.md", "AGENT-GUIDE.md", "ARCHITECTURE.md", "INVENTORY.md"]
 TIERS = re.compile(r"\[(static|runtime|e2e|suite|requires:[^\]]*)\]", re.I)
@@ -143,6 +150,10 @@ def heading_anchors(text):
     return slugs
 
 
+def is_verification_name(fn):
+    return fn.endswith("verification-pass.md")
+
+
 def is_ui_path(p):
     return p.endswith(UI_EXT) or bool(UI_DIR.search(os.path.dirname(p)))
 
@@ -205,6 +216,37 @@ def main():
         status = keys.get("status", "")
         if status and status not in STATUSES:
             err(fn, f"Status {status!r} is not one of: {' · '.join(sorted(STATUSES))}")
+
+        # **Model:** — spec-run passes the claude id straight to the session, so
+        # a missing tier or a missing provider is a failed run, not a typo.
+        model = keys.get("model", "")
+        if not model:
+            err(fn, "header block has no **Model:** line "
+                    "(tier + one model per provider — see model-selection.md)")
+        else:
+            if not MODEL_LINE.match(model):
+                err(fn, f"Model line does not start with a tier "
+                        f"({' / '.join(sorted(TIER_NAMES))}): {model!r}")
+            ids = [m for m in re.findall(r"`([^`]+)`", model)]
+            if len(ids) < 3:
+                err(fn, f"Model line names {len(ids)} model id(s), needs 3 "
+                        f"(Anthropic · OpenAI · Google) in backticks")
+            if not any(i.startswith("claude-") for i in ids):
+                err(fn, "Model line names no `claude-*` id — spec-run has "
+                        "nothing to pass to the session")
+            if is_verification_name(fn) and not model.lower().startswith("heavy"):
+                err(fn, "the verification pass must be tier Heavy")
+            if num == 0 and not model.lower().startswith("heavy"):
+                warn(fn, "spec 00 is a decision spec — tier it Heavy")
+
+        # **Issue:** — written back by the implementing session
+        issue = keys.get("issue", "")
+        if "issue" not in keys:
+            err(fn, "header block has no **Issue:** line (use '—' until one exists)")
+        elif not ISSUE_VALUE.match(issue.strip()):
+            err(fn, f"Issue {issue!r} is not '—' or '#<number>'")
+        elif issue.strip() in {"—", "-"} and status in {"In progress", "Done"}:
+            warn(fn, f"Status is '{status}' but no GitHub issue is recorded")
 
         # sections
         for want in REQUIRED_SECTIONS:

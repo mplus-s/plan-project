@@ -1,6 +1,6 @@
 ---
 name: plan-project
-description: Plan a project or feature as a set of very small, dependency-ordered spec files plus four steering docs — agent guide, architecture, design system, and a reuse inventory that stops duplicate components/constants — with a progress tracker. Use when starting a new project, adding a feature to an existing codebase, or when asked to plan, spec out, break down, or scope work before implementing. Output is `spec-run` compatible.
+description: Plan a project or feature as a set of very small, dependency-ordered spec files plus four steering docs — agent guide, architecture, design system (optionally using the Zeki Expert Solutions brand — palette, Poppins, logo assets), and a reuse inventory that stops duplicate components/constants — with a progress tracker. Use when starting a new project, adding a feature to an existing codebase, or when asked to plan, spec out, break down, or scope work before implementing. Output is `spec-run` compatible.
 ---
 
 # plan-project
@@ -66,8 +66,19 @@ whose answers change the spec set:
 1. **Scope boundary and explicit non-goals** — what v1 is *not*. This is the
    single highest-value answer; without it every spec grows.
 2. **Stack**, if not already fixed by the repo.
-3. **Design direction** — do they have a palette/brand/reference, or is Claude
-   deciding? If they supply one, record it verbatim and invent nothing.
+3. **Design direction** — this is a fork with four answers, and it is the one
+   that decides how `DESIGN-SYSTEM.md` gets written. Offer them as options:
+
+   | Answer | What it means |
+   | --- | --- |
+   | **Zeki branding** | Use the house brand — navy/yellow palette, Poppins, the Zeki logo. Load [`references/brand-zeki.md`](references/brand-zeki.md) and fill [`templates/DESIGN-SYSTEM-zeki.md`](templates/DESIGN-SYSTEM-zeki.md). |
+   | **User-supplied** | They have a palette, brand kit, reference site or Figma file. Transcribe it verbatim and invent nothing around it. |
+   | **Claude decides** | No constraint given — decide the system fully, using a design skill if one fits. |
+   | **No UI** | Headless project. Skip `DESIGN-SYSTEM.md` and say so in `README.md`. |
+
+   Ask it for any project with a user interface — a Zeki-branded project and an
+   unbranded one produce different specs from the very first UI unit, so this
+   is not a question to defer to implementation.
 4. **Auth / multi-user / persistence** — these restructure the architecture.
 5. **Deployment target**, if it constrains the stack.
 
@@ -108,7 +119,7 @@ Full contents and required sections:
 
 | Doc | Owns | One-line test of a good one |
 | --- | --- | --- |
-| `AGENT-GUIDE.md` | Read order, one-unit-per-session rule, verify-before-asserting, done bar, both e2e run commands | A fresh session that reads only this knows how to behave |
+| `AGENT-GUIDE.md` | Read order, one-unit-per-session rule, the issue/PR ritual, verify-before-asserting, done bar, both e2e run commands | A fresh session that reads only this knows how to behave |
 | `ARCHITECTURE.md` | Real folder tree, layer boundaries, data model, naming, protected files, numbered invariants | Someone could create the empty folder tree from it exactly |
 | `DESIGN-SYSTEM.md` | Closed token list with real hex values, type scale, spacing, radii, states, motion, a11y | A token not listed there does not exist |
 | `INVENTORY.md` | Every reusable component/hook/util/constant/type with its path | Answers "does this already exist?" without a grep |
@@ -118,9 +129,19 @@ Two rules that carry most of the weight:
 - **`DESIGN-SYSTEM.md` is a closed list.** Specs may only name tokens that
   appear in it. Inventing a plausible-sounding variant is a real, observed
   failure mode. Raw hex codes and raw palette classes are banned everywhere
-  except this file. If the user supplied a design, transcribe it; otherwise
-  decide it fully — palette, type, spacing, radii, elevation, motion — and say
-  why in one line each.
+  except this file. Write it according to the Phase 0 design answer: **Zeki
+  branding** → copy `templates/DESIGN-SYSTEM-zeki.md`, which already carries the
+  brand's colour, type, radius and logo rules, and fill only the project's own
+  rows; **user-supplied** → transcribe it and ask about the gaps; **Claude
+  decides** → decide it fully — palette, type, spacing, radii, elevation,
+  motion — and say why in one line each.
+- **Zeki-branded projects also own their logo files.** The first UI spec copies
+  the needed files out of [`assets/zeki/`](assets/zeki/) into the project and
+  records them in `INVENTORY.md`, so no later spec re-downloads or re-traces
+  them. The brand's usage rules — clear space, minimum sizes, knockout variant
+  on dark, and the fact that brand yellow is never text on white — live in
+  [`references/brand-zeki.md`](references/brand-zeki.md), and the checks that
+  prove them belong in the verification pass.
 - **`INVENTORY.md` is the anti-duplication mechanism.** For an existing repo,
   build it by reading the real code, not by guessing. For greenfield it starts
   as a skeleton and every spec appends to it as its last step. See
@@ -149,6 +170,19 @@ The short version:
   a spec that should have been two.
 - **Number by dependency.** A spec may only depend on lower numbers. Forward
   references are a defect.
+- **Size the model with the spec.** Every spec's `**Model:**` line carries a
+  tier and one model per provider — `Heavy` for decisions, the data model, auth,
+  routing, shared layers and the verification pass; `Light` for config, copy and
+  scaffolding; `Standard` for the rest. `spec-run` passes the Claude id to that
+  spec's session, so a wrong id is a failed run, not a typo. Read
+  [`references/model-selection.md`](references/model-selection.md) — and check
+  the ids against the providers' model pages before writing them, because model
+  lineups move faster than this skill does.
+- **Every spec starts with `**Issue:** —`.** The implementing session finds or
+  creates the spec's GitHub issue before writing code and opens a PR when the
+  `Done when` passes; the planner's job is only to leave the field there and
+  state the workflow in `AGENT-GUIDE.md`. See
+  [`references/github-workflow.md`](references/github-workflow.md).
 - **The last spec is always a verification pass** — clean build, every earlier
   spec's `Done when` re-checked, full Playwright suite green, duplication sweep.
 - **A mid-plan fork gets its own decision spec.** Never bury a decision inside
@@ -239,6 +273,11 @@ a contract and not decoration.
 6. **Surface decisions, never bury them.** A fork with real cost either way
    gets written down with a recommendation and left for a human.
 7. **Don't scaffold an empty `Log`.** It is added when work starts.
+8. **Tier every spec and check the model ids.** `**Model:**` is parsed and
+   passed to the session — an id that does not exist is a failed run, and a
+   model lineup you remember from training is not evidence.
+9. **One spec, one issue, one PR.** Never open a second issue for a spec that
+   already has one, and never merge the PR that closes it.
 
 ## Reference index
 
@@ -246,10 +285,15 @@ a contract and not decoration.
 | --- | --- |
 | [`references/spec-format.md`](references/spec-format.md) | Writing any spec file — the exact format and the `spec-run` contract |
 | [`references/steering-docs.md`](references/steering-docs.md) | Phase 2 — required sections of all four steering docs |
+| [`references/brand-zeki.md`](references/brand-zeki.md) | The project uses Zeki branding — palette, type, logo assets and their rules |
+| [`references/model-selection.md`](references/model-selection.md) | Phase 3 — tiering each spec and writing its `**Model:**` line |
+| [`references/github-workflow.md`](references/github-workflow.md) | The issue-per-spec / PR-per-spec workflow the implementing sessions follow |
 | [`references/splitting.md`](references/splitting.md) | Phase 3 — sizing rules, the DAG, a worked split |
 | [`references/reuse-inventory.md`](references/reuse-inventory.md) | Building `INVENTORY.md` and enforcing reuse |
 | [`references/e2e-playwright.md`](references/e2e-playwright.md) | Writing the e2e obligation, the scoped/suite split, and the harness spec |
 | [`references/stack-patterns/react-node.md`](references/stack-patterns/react-node.md) | The stack is React, React Native, or Node |
 | [`references/stack-patterns/unknown-stack.md`](references/stack-patterns/unknown-stack.md) | The stack is anything else |
+| `templates/DESIGN-SYSTEM-zeki.md` | Phase 2 on a Zeki-branded project — the brand tokens, pre-filled |
+| `assets/zeki/` | The Zeki logo files a branded project copies into itself |
 | `templates/` | Copy-and-fill starting points for every file above |
 | `scripts/validate-specs.py` | Phase 4 — always |

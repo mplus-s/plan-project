@@ -26,12 +26,16 @@ Track progress in [PROGRESS.md](./PROGRESS.md).
 each vertical slice and anything touching tokens, auth, routing, or the shared
 data layer.
 
-| # | Spec | Gate | What it covers |
-|---|---|---|---|
-| 00 | [<Decision>](./00-<slug>.md) | — | <Stack, storage, state, testing, design direction. Read first.> |
-| 01 | [<Title>](./01-<slug>.md) | scoped | <one line> |
-| NN | [<Slice end>](./NN-<slug>.md) | **suite** | <one line — checkpoint: completes <capability>> |
-| NN | [Verification pass](./NN-verification-pass.md) | **suite** | Final gate: clean build, every done-when re-checked, full e2e suite, duplication sweep. |
+`Model` is the tier each spec is sized for — the per-provider ids are on the
+spec's own `**Model:**` line, and `spec-run` passes the Claude one to that
+spec's session.
+
+| # | Spec | Gate | Model | What it covers |
+|---|---|---|---|---|
+| 00 | [<Decision>](./00-<slug>.md) | — | Heavy | <Stack, storage, state, testing, design direction. Read first.> |
+| 01 | [<Title>](./01-<slug>.md) | scoped | Standard | <one line> |
+| NN | [<Slice end>](./NN-<slug>.md) | **suite** | Heavy | <one line — checkpoint: completes <capability>> |
+| NN | [Verification pass](./NN-verification-pass.md) | **suite** | Heavy | Final gate: clean build, every done-when re-checked, full e2e suite, duplication sweep. |
 
 ## Dependency order
 

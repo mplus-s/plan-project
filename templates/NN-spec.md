@@ -2,6 +2,8 @@
 
 **Status:** Not started
 **Depends on:** Spec NN, Spec NN
+**Model:** <Heavy|Standard|Light> — `<claude id>` · `<openai id>` · `<gemini id>`
+**Issue:** —
 **Owns:** `path/to/file.ts`, `path/to/other.tsx`
 **Reuses:** `path/to/existing.ts` (spec NN), `DESIGN-SYSTEM.md#<anchor>`, `INVENTORY.md#<anchor>`
 

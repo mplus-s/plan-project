@@ -28,6 +28,20 @@ work, or persistence and realtime state, or several unrelated routes, is more
 than one spec — splitting it is correct; proposing one oversized unit is the
 failure mode.
 
+### Claim the GitHub issue before writing code
+The search-then-create order, the title prefix `Spec NN — ` that joins the issue
+to the spec file, writing `#<n>` back into the spec header and the tracker row
+before any code, the PR with `Closes #<n>`, and "never merge your own PR". Say
+plainly that `gh` failures are logged, not fatal, and that the whole section is
+skipped when the project has no GitHub remote. Full commands:
+[`github-workflow.md`](github-workflow.md).
+
+### The model on the spec is the model to run
+The `**Model:**` line's tier is the sizing judgement made while the whole set
+was visible; `spec-run` passes the Claude id through. State the re-tier rule: a
+spec that stalls gets bumped a tier and re-run, not retried at the same one.
+See [`model-selection.md`](model-selection.md).
+
 ### Verify before you assert
 The named checks, as commands:
 - A package claimed as pre-installed → read `package.json`.
@@ -159,6 +173,15 @@ Skip only for a project with no user interface at all — and say so in
 
 Test of a good one: **a token not listed here does not exist.** It is a closed
 list, and it is the only file in the repo allowed to contain a raw hex value.
+
+**If the intake chose Zeki branding**, the palette, type, radius and logo are
+already decided — read [`brand-zeki.md`](brand-zeki.md), copy
+[`../templates/DESIGN-SYSTEM-zeki.md`](../templates/DESIGN-SYSTEM-zeki.md), mark
+`Source: Zeki brand, read <date>`, and fill only the rows the brand does not
+own: the type scale's steps, the mono face, spacing, layout and component
+conventions, motion. Do not re-decide a colour it already fixes, and do not
+extend the palette silently — a project-specific token gets a rationale and a
+Log line saying it is an extension.
 
 **If the user supplied a design** — a palette, a brand kit, a reference site, a
 Figma file — transcribe it and mark `Source: user-supplied`. Invent nothing

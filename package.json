@@ -1,6 +1,6 @@
 {
   "name": "plan-project",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Plan a project or feature as a set of very small, dependency-ordered spec files with steering docs, a progress tracker, and a validator. Installs into Claude Code, Codex, Cursor, Antigravity, Windsurf, Copilot, Cline, Roo and any AGENTS.md agent.",
   "type": "module",
   "bin": {
@@ -13,6 +13,7 @@
     "references",
     "templates",
     "scripts",
+    "assets",
     "README.md",
     "LICENSE"
   ],

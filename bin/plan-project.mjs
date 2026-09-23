@@ -12,7 +12,7 @@ import { multiselect } from "../lib/prompt.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PKG = resolve(HERE, "..");
-const PAYLOAD = ["SKILL.md", "references", "templates", "scripts"];
+const PAYLOAD = ["SKILL.md", "references", "templates", "scripts", "assets"];
 
 const BYLINE = "plan-project \u00b7 by M Shahzad";
 
@@ -230,7 +230,7 @@ if (global) {
 
 // Everyone else: one payload, thin adapters.
 if (!copyPayload(join(root, payloadRel))) process.exit(1);
-console.log(`  ${C.g}✓${C.x} content  ${payloadRel}/  ${C.d}(SKILL.md, references, templates, scripts)${C.x}`);
+console.log(`  ${C.g}✓${C.x} content  ${payloadRel}/  ${C.d}(SKILL.md, references, templates, scripts, assets)${C.x}`);
 
 for (const a of chosen) {
   if (a.link) {

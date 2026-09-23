@@ -13,6 +13,8 @@ readable by the next one. Deviating breaks the runner silently.
 
 **Status:** Not started
 **Depends on:** Spec 02, Spec 03
+**Model:** Standard — `claude-sonnet-5` · `gpt-6-sol` · `gemini-3.8-flash`
+**Issue:** —
 **Owns:** `src/features/board/components/card-item.tsx`, `src/features/board/hooks/use-card-drag.ts`
 **Reuses:** `src/features/board/api/cards.ts` (spec 02), `DESIGN-SYSTEM.md#surfaces`, `INVENTORY.md#confirm-dialog`
 
@@ -73,8 +75,16 @@ after every session, so:
 | --- | --- | --- |
 | `**Status:**` | yes | Exactly one of `Not started` · `In progress` · `Blocked` · `Done` |
 | `**Depends on:**` | yes | `Spec 01, Spec 02`, a range `00-06`, or `—` for none |
+| `**Model:**` | yes | `<Heavy\|Standard\|Light> — <claude id> · <openai id> · <gemini id>`. See [`model-selection.md`](model-selection.md) |
+| `**Issue:**` | yes | `—` until the implementing session opens one, then `#<n>`. See [`github-workflow.md`](github-workflow.md) |
 | `**Owns:**` | yes | Comma-separated paths this spec creates or is the sole editor of. `—` for a decision spec |
 | `**Reuses:**` | recommended | Paths, `DESIGN-SYSTEM.md#anchor`, or `INVENTORY.md#anchor` this spec must build on rather than reinvent |
+
+`Model` is read by `spec-run`, which passes the `claude-*` id to that spec's
+session as `--model`. It is not a comment: a malformed or non-existent id is a
+failed session. `Issue` is written back by the implementing session once the
+GitHub issue exists, and is what stops a second issue being opened for the same
+spec on a later run.
 
 `Owns` is what makes ownership collisions machine-checkable: two specs listing
 the same path is an error, and it is the most common cause of two sessions
@@ -200,6 +210,11 @@ one line of rationale. `Owns: —`. Its `Done when` is the decision being record
 not code existing, so it is marked `Done` as soon as it is written and the
 scaffold exists. Later forks get their own decision specs — clearly marked, never
 buried inside an execution spec.
+
+**Spec 00 and the verification pass are always `Heavy`**, and so is any spec
+touching the data model, auth, routing, the shared data layer, or the token
+system. Everything else is `Standard` unless it is mechanical enough to be
+`Light` — config, copy, scaffolding, transcription.
 
 **The last spec — the verification pass.** Always present, always last, always
 depends on everything (`Depends on: 00-12`). It rebuilds from clean, re-checks
