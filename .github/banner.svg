@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 360" width="1280" height="360" role="img" aria-label="plan-project — planning that a context-free agent session can execute one unit at a time">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0A1734"/>
+      <stop offset="52%" stop-color="#113C94"/>
+      <stop offset="100%" stop-color="#12358C"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.22" r="0.62">
+      <stop offset="0%" stop-color="#64BBE4" stop-opacity="0.34"/>
+      <stop offset="100%" stop-color="#64BBE4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="warm" cx="0.06" cy="0.95" r="0.55">
+      <stop offset="0%" stop-color="#FFC918" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#FFC918" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#FFFFFF" stroke-opacity="0.045" stroke-width="1"/>
+    </pattern>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <clipPath id="frame"><rect width="1280" height="360" rx="20"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <rect width="1280" height="360" fill="url(#bg)"/>
+    <rect width="1280" height="360" fill="url(#grid)"/>
+    <rect width="1280" height="360" fill="url(#glow)"/>
+    <rect width="1280" height="360" fill="url(#warm)"/>
+    <rect width="1280" height="360" filter="url(#grain)" opacity="0.055"/>
+
+    <!-- left: the wordmark, one line, wide runway -->
+    <g font-family="Poppins, 'Cabinet Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif">
+      <rect x="72" y="96" width="56" height="5" rx="2.5" fill="#FFC918"/>
+      <text x="72" y="196" font-size="76" font-weight="700" letter-spacing="-2.2" fill="#FFFFFF">plan-project</text>
+      <text x="74" y="240" font-size="21" font-weight="400" letter-spacing="0.2" fill="#BFD2F2">Small specs. One fresh session each. Nothing carried over.</text>
+      <text x="74" y="292" font-size="15" font-weight="500" letter-spacing="2.6" fill="#FFC918">SPECS &#183; STEERING DOCS &#183; TRACKER &#183; VALIDATOR</text>
+    </g>
+
+    <!-- right: three interlocked spec cards, one live -->
+    <g transform="translate(760, 0)">
+      <path d="M40 124 H24 V196 H40" fill="none" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="1.5"/>
+      <path d="M40 196 H24 V268 H40" fill="none" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="1.5"/>
+
+      <g font-family="Poppins, 'Cabinet Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif">
+        <rect x="40" y="96" width="360" height="56" rx="12" fill="#FFFFFF" fill-opacity="0.09" stroke="#FFFFFF" stroke-opacity="0.18"/>
+        <circle cx="70" cy="124" r="5" fill="#14B87A"/>
+        <text x="90" y="130" font-size="17" font-weight="500" fill="#EAF1FF">00 &#183; decision</text>
+        <text x="368" y="130" font-size="13" font-weight="500" fill="#8FB0E6" text-anchor="end">Done</text>
+
+        <rect x="40" y="168" width="300" height="56" rx="12" fill="#FFC918" fill-opacity="0.16" stroke="#FFC918" stroke-opacity="0.55"/>
+        <circle cx="70" cy="196" r="5" fill="#FFC918"/>
+        <text x="90" y="202" font-size="17" font-weight="500" fill="#FFF6ED">04 &#183; card CRUD</text>
+        <text x="308" y="202" font-size="13" font-weight="500" fill="#FFC918" text-anchor="end">running</text>
+
+        <rect x="40" y="240" width="240" height="56" rx="12" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.12"/>
+        <circle cx="70" cy="268" r="5" fill="#FFFFFF" fill-opacity="0.3"/>
+        <text x="90" y="274" font-size="17" font-weight="500" fill="#A9C0E8">05 &#183; filters</text>
+      </g>
+    </g>
+  </g>
+</svg>

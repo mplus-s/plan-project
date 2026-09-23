@@ -1,6 +1,20 @@
-# plan-project
+<div align="center">
+
+<img src=".github/banner.svg" alt="plan-project" width="100%">
+
+<br>
+
+[![install](https://img.shields.io/badge/npx-github%3Amplus--s%2Fplan--project-113C94?style=flat-square&labelColor=0A1734)](#install)
+[![agents](https://img.shields.io/badge/agents-9%20supported-2466A2?style=flat-square&labelColor=0A1734)](#what-each-agent-actually-gets)
+[![node](https://img.shields.io/badge/node-18%2B-14795A?style=flat-square&labelColor=0A1734)](#requirements)
+[![dependencies](https://img.shields.io/badge/dependencies-0-FFC918?style=flat-square&labelColor=0A1734)](#requirements)
+[![licence](https://img.shields.io/badge/licence-MIT-6B7689?style=flat-square&labelColor=0A1734)](#licence)
 
 **by M Shahzad**
+
+</div>
+
+<br>
 
 A skill that turns a brief — or an existing repository — into a set of very
 small, dependency-ordered spec files that a fresh, context-free agent session
@@ -9,7 +23,25 @@ OpenAI Codex, Cursor, Google Antigravity, Windsurf, GitHub Copilot, Cline, Roo
 Code, and every agent that reads [AGENTS.md](https://agents.md).
 
 Each spec is small enough that one session can read it, implement it, verify it
-end to end, and leave a written handoff. The skill plans; it does not implement.
+end to end, and leave a written handoff. **The skill plans; it does not implement.**
+
+```mermaid
+%%{init: {'theme':'base','themeVariables':{
+  'primaryColor':'#113C94','primaryTextColor':'#FFFFFF','primaryBorderColor':'#2466A2',
+  'lineColor':'#FFC918','secondaryColor':'#12358C','tertiaryColor':'#0A1734'}}}%%
+flowchart LR
+  B["a brief, or<br/>an existing repo"] --> P["plan-project<br/><i>this skill</i>"]
+  P --> S["4 steering docs<br/>tracker · index"]
+  P --> N["NN-slug.md<br/>one small unit each"]
+  S --> R["a runner<br/>one fresh session per spec"]
+  N --> R
+  R --> D["shipped work<br/>+ a written handoff"]
+  style P fill:#113C94,stroke:#FFC918,stroke-width:2px,color:#FFFFFF
+  style D fill:#14795A,stroke:#14795A,color:#FFFFFF
+  style B fill:#0A1734,stroke:#2466A2,color:#BFD2F2
+```
+
+<br>
 
 ## What it produces
 
@@ -29,9 +61,11 @@ end to end, and leave a written handoff. The skill plans; it does not implement.
 Four steering docs, one tracker, one index, and many small specs. Steering docs
 are written once and read by every spec. Specs are disposable units of work.
 
+<br>
+
 ## Three things every spec carries
 
-### 🎨 A design direction — optionally branded
+### ![Design](https://img.shields.io/badge/-Design%20direction-113C94?style=flat-square&labelColor=113C94)
 
 The intake asks one question with four answers, because a branded project and an
 unbranded one produce different specs from the first UI unit onward:
@@ -43,32 +77,37 @@ unbranded one produce different specs from the first UI unit onward:
 | **Model decides** | Decided in full — palette, type, spacing, radii, elevation, motion — one line of rationale each |
 | **No UI** | `DESIGN-SYSTEM.md` is skipped, and `README.md` says so rather than omitting it silently |
 
-Either way the result is a **closed list**: a token that is not in
-`DESIGN-SYSTEM.md` does not exist, and that file is the only place in the repo
-allowed to hold a raw hex value.
+> [!IMPORTANT]
+> The result is a **closed list**: a token that is not in `DESIGN-SYSTEM.md` does
+> not exist, and that file is the only place in the repo allowed to hold a raw
+> hex value. Inventing a plausible-sounding variant locally is the failure mode
+> this rule exists to stop.
 
-### 🧮 A model, sized to the spec
+### ![Model](https://img.shields.io/badge/-Model%20per%20spec-2466A2?style=flat-square&labelColor=2466A2)
 
 Each spec's `**Model:**` header line carries a tier and one model per provider,
 chosen from how much of the system a mistake in that spec would damage:
 
 | Tier | Anthropic | OpenAI | Google | For |
 | --- | --- | --- | --- | --- |
-| **Heavy** | `claude-opus-5` | `gpt-6-astra` | `gemini-3.1-pro-preview` | Decisions, the data model, auth, routing, shared layers, the verification pass |
-| **Standard** | `claude-sonnet-5` | `gpt-6-sol` | `gemini-3.8-flash` | Most feature-sized units |
-| **Light** | `claude-haiku-4-5` | `gpt-6-luna` | `gemini-3.5-flash-lite` | Config, copy, scaffolding, transcription |
+| ![Heavy](https://img.shields.io/badge/-Heavy-113C94?style=flat-square&labelColor=113C94) | `claude-opus-5` | `gpt-6-astra` | `gemini-3.1-pro-preview` | Decisions, the data model, auth, routing, shared layers, the verification pass |
+| ![Standard](https://img.shields.io/badge/-Standard-2466A2?style=flat-square&labelColor=2466A2) | `claude-sonnet-5` | `gpt-6-sol` | `gemini-3.8-flash` | Most feature-sized units |
+| ![Light](https://img.shields.io/badge/-Light-64BBE4?style=flat-square&labelColor=64BBE4) | `claude-haiku-4-5` | `gpt-6-luna` | `gemini-3.5-flash-lite` | Config, copy, scaffolding, transcription |
 
 ```markdown
 **Model:** Standard — `claude-sonnet-5` · `gpt-6-sol` · `gemini-3.8-flash`
 ```
 
 A runner can read that line and start the session on the named model —
-[`spec-run`](https://github.com/mplus-s/command-center-linux-ubuntu) does. Model
-lineups move faster than any file does, so `references/model-selection.md`
-records the date its ids were verified and tells the planner to re-check them
-against the providers' own model pages before writing a set.
+[`spec-run`](https://github.com/mplus-s/command-center-linux-ubuntu) does.
 
-### 🐙 A GitHub issue, and a PR that closes it
+> [!NOTE]
+> Model lineups move faster than any file does. `references/model-selection.md`
+> records the date its ids were verified and tells the planner to re-check them
+> against the providers' own model pages before writing a set. A plausible id
+> that does not exist is the same defect class as a hallucinated library export.
+
+### ![Issue](https://img.shields.io/badge/-Issue%20per%20spec-14795A?style=flat-square&labelColor=14795A)
 
 One spec is one issue is one pull request. The implementing session, not the
 planner:
@@ -80,10 +119,13 @@ planner:
    spec's `**Issue:**` header and the tracker row — **before** any code.
 3. Opens a PR with `Closes #n` once the `Done when` checks actually pass, and
    moves the issue to Done on the board if the repo has one.
-4. **Never merges its own PR.** The PR is the human review gate.
 
-`gh` failing is logged, not fatal, and the whole workflow is skipped when the
-project has no GitHub remote.
+> [!WARNING]
+> The session never merges its own PR. The PR is the human review gate, and a
+> spec queue that merges itself has no gate at all. `gh` failing is logged, not
+> fatal, and the whole workflow is skipped when the project has no GitHub remote.
+
+<br>
 
 ## Install
 
@@ -91,9 +133,9 @@ project has no GitHub remote.
 npx github:mplus-s/plan-project
 ```
 
-It installs straight from the GitHub repo — there is nothing on the npm
-registry, so that is the command, and `git` has to be on your PATH for npx to
-fetch it. Pin a release by appending a ref: `npx github:mplus-s/plan-project#v0.2.0`.
+It installs straight from this repo — there is nothing on the npm registry, so
+that is the command, and `git` has to be on your PATH for npx to fetch it. Pin a
+release by appending a ref: `npx github:mplus-s/plan-project#v0.2.0`.
 
 Run it in your repo. It shows a picker with the agents it detected already
 ticked — space to toggle, `a` for all, enter to install:
@@ -128,8 +170,8 @@ npx github:mplus-s/plan-project --global        # install for all projects, not 
 
 The content is ~412KB (228KB of it optional brand assets) and `SKILL.md` alone
 is 16,369 characters — more than Windsurf allows in a single rule file, and far
-more than you want billed on every Cursor request. So it goes in **once**, and each agent gets a short
-adapter pointing at it:
+more than you want billed on every Cursor request. So it goes in **once**, and
+each agent gets a short adapter pointing at it:
 
 ```
 .ai/plan-project/                 the content — one copy
@@ -143,7 +185,8 @@ adapter pointing at it:
 AGENTS.md                         an appended section, your content untouched
 ```
 
-Commit `.ai/plan-project/` and the adapters so your team gets it too.
+> [!TIP]
+> Commit `.ai/plan-project/` and the adapters so your team gets it too.
 
 ### What each agent actually gets
 
@@ -162,8 +205,11 @@ matter and tells the agent which reference to open next.
 
 ### Requirements
 
-Node 18+ and `git` for the installer (npx clones the repo). The validator is Python — `python3` on PATH to run
-it. Nothing else; the installer has zero dependencies.
+Node 18+ and `git` for the installer (npx clones the repo). The validator is
+Python — `python3` on PATH to run it. Nothing else; the installer has zero
+dependencies.
+
+<br>
 
 ## The validator
 
@@ -192,6 +238,8 @@ mechanically checks the things that actually go wrong:
 - warns on code blocks in specs, raw hex outside `DESIGN-SYSTEM.md`, specs over
   130 lines, and anything created that no other spec ever mentions
 
+<br>
+
 ## Ideas it is built around
 
 - **A feature is several specs, not one.** Data layer → API → UI shell →
@@ -207,11 +255,13 @@ mechanically checks the things that actually go wrong:
   checked against the real tree before it goes into a spec.
 - **Reuse before creating.** `INVENTORY.md` makes "does this already exist?"
   answerable in one read.
-- **Size the model to the spec, not to the set.** A config spec and an auth
-  spec are not the same problem; the planning session is the only point where
-  the whole set is visible at once, so that is where the call belongs.
+- **Size the model to the spec, not to the set.** A config spec and an auth spec
+  are not the same problem; the planning session is the only point where the
+  whole set is visible at once, so that is where the call belongs.
 - **Surface decisions, never bury them.** A fork with real cost either way gets
   written down with a recommendation and left for a human.
+
+<br>
 
 ## Layout
 
@@ -232,6 +282,8 @@ templates/               copy-and-fill starting points
 assets/zeki/             the brand logo files, with provenance in its README
 scripts/validate-specs.py   the mechanical check
 ```
+
+<br>
 
 ## Licence
 
